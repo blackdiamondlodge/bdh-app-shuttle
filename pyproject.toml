@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bdh-app-shuttle"
-version = "1.0.0"
+version = "1.0.1"
 description = "Black Diamond Hub app: Sun Peaks in-resort shuttle times, live bus location and spoken reminders"
 readme = "README.md"
 license = { text = "MIT" }

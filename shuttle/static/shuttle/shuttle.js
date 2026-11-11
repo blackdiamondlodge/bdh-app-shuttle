@@ -35,7 +35,8 @@
     const code = s.id;
     const ours = code === geo.our;
     const name = ours ? `${code} ${s.name} · our stop` : `${code === "VDL" ? "" : code + " "}${s.name}`;
-    const label = ours || s.label ? `<span class="sh-slab">${esc(name)}</span>` : "";
+    const side = !ours && s.label === "left" ? " left" : "";
+    const label = ours || s.label ? `<span class="sh-slab${side}">${esc(name)}</span>` : "";
     const size = ours ? 30 : 16;
     L.marker([s.lat, s.lon], {
       zIndexOffset: ours ? 500 : 0,
