@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Shuttle{% endblock %}
+{% block body_class %}sh-page{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="{% static 'shuttle/shuttle.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="sh-wrap" id="sh" data-live-url="{% url 'shuttle_live' %}" data-rem-url="{% url 'shuttle_reminders' %}"
+     data-season="{{ in_season|yesno:'1,' }}" data-reminders="{{ reminders_on|yesno:'1,' }}">
+  {% csrf_token %}
+  <div class="sh-mapc">
+    <div id="sh-map"></div>
+    <div class="sh-live{% if not in_season %} off{% endif %}" id="sh-live">
+      <span class="pulse"></span>
+      <div>
+        <b id="sh-lt">{% if in_season %}Looking for the shuttle…{% else %}Shuttle not running{% endif %}</b>
+        <div class="sub" id="sh-ls">{% if not in_season %}Winter service {{ season_note|lower }} · live tracking resumes then{% endif %}</div>
+      </div>
+    </div>
+    <div class="sh-legend">
+      <span><i class="d" style="background:#ffb36b"></i>Our stop</span>
+      {% if in_season %}<span><i class="d" style="background:#5fd68b"></i>Shuttle (live)</span>{% endif %}
+      <span><i class="d" style="border:2px solid #7cc4ff"></i>Stops</span>
+    </div>
+  </div>
+
+  <div class="sh-rail">
+    <div class="sh-card" id="sh-next">
+      {% if next and not lodge.preview %}
+      <div class="lbl"><i class="fas fa-location-dot"></i>{% if next.today %}Next shuttle{% else %}First shuttle tomorrow{% endif %} · Lookout Ridge stop (out front)</div>
+      <div class="sh-nx">
+        <div class="t">{{ next.time|slice:":-3" }}<small>{{ next.time|slice:"-2:" }}</small></div>
+        <div class="in" data-t="{{ next.iso }}" data-next="1">{% if next.today %}{{ next.rel }}{% endif %}</div>
+        {% if reminders_on %}<button type="button" class="bell" data-dep="{{ next.iso }}" data-label="{{ next.time }}"><i class="fas fa-bell"></i>Remind me</button>{% endif %}
+      </div>
+      <div class="where">To the Village · arrives Village Day Lodge ~{{ next.village }}</div>
+      {% else %}
+      <div class="lbl"><i class="fas fa-calendar"></i>Winter service</div>
+      <div class="sh-nx"><div class="t sm">{{ season_note }}</div></div>
+      <div class="where">Daily, about {{ first_bus }} – {{ last_bus }} from Lookout Ridge (out front). The timetable below is a preview.</div>
+      {% endif %}
+    </div>
+
+    <div class="sh-card sh-deps">
+      <div class="lbl"><i class="fas fa-clock"></i>Departures{% if lodge.tomorrow %} · tomorrow{% endif %}</div>
+      <div class="sh-tabs" role="tablist">
+        <button type="button" class="on" data-tab="lodge">From the lodge</button>
+        <button type="button" data-tab="village">Back from the Village</button>
+      </div>
+      {% for key, b in boards %}
+      <div class="sh-list" data-list="{{ key }}"{% if not forloop.first %} hidden{% endif %}>
+        {% for r in b.rows %}
+          {% if r.brk %}<div class="sh-brk">— {{ r.brk }} —</div>
+          {% else %}
+          <div class="sh-row{% if r.past %} past{% endif %}">
+            <div class="tm">{{ r.time }}</div>
+            <div class="rel"{% if not r.past and not b.preview and not b.tomorrow %} data-t="{{ r.iso }}"{% endif %}>{% if r.past %}departed{% else %}{{ r.rel }}{% endif %}{% if r.arrive and not r.past %}<span class="arr">at the lodge ~{{ r.arrive }}</span>{% endif %}{% if r.last %} <span class="tag">Last bus</span>{% endif %}</div>
+            {% if r.remind and reminders_on %}<button type="button" class="rb" data-dep="{{ r.iso }}" data-label="{{ r.time }}" aria-label="Remind me about the {{ r.time }} shuttle"><i class="far fa-bell"></i></button>{% endif %}
+          </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+      {% endfor %}
+      <div id="sh-rems"></div>
+    </div>
+
+    <div class="sh-foot">Free in-resort shuttle · runs daily in the winter season. Times are approximate. Live location by skiKrumb.<br>Questions? Guest Services 250-578-5474</div>
+  </div>
+</div>
+
+{% if reminders_on %}
+<div class="sh-ov" id="sh-ov" hidden>
+  <div class="sh-dlg" role="dialog" aria-modal="true" aria-labelledby="sh-dh">
+    <h3 id="sh-dh"><i class="fas fa-bell"></i>Remind me about the <span id="sh-dt"></span> shuttle</h3>
+    <div class="m">From Lookout Ridge (out front) to the Village</div>
+    <div class="q">How much warning?</div>
+    <div class="sh-leads" id="sh-leads">
+      {% for n in leads %}<button type="button" data-lead="{{ n }}">{{ n }} min<small></small></button>{% endfor %}
+    </div>
+    <div class="sh-prev"><i class="fas fa-volume-high"></i><div><span id="sh-say"></span><div class="w">Plays once on the dining room speaker, over any music.</div></div></div>
+    <div class="sh-err" id="sh-err"></div>
+    <div class="sh-acts">
+      <button type="button" class="c" id="sh-close">Cancel</button>
+      <button type="button" class="rm" id="sh-remove" hidden>Remove reminder</button>
+      <button type="button" class="ok" id="sh-ok">Set reminder</button>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{{ geo|json_script:"sh-geo" }}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{% static 'shuttle/shuttle.js' %}"></script>
+{% endblock %}

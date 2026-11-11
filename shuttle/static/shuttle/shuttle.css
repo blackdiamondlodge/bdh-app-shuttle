@@ -1,0 +1,120 @@
+/* Shuttle — ported from the approved mockup. The page fills the screen under
+   the hub's fixed navbar; the departures list scrolls on its own. */
+body.sh-page{font-family:"Segoe UI",system-ui,sans-serif;color:#e8eef5;overflow:hidden;
+  background:radial-gradient(ellipse 120% 80% at 50% 0%,#1d2a3f 0%,#101722 55%,#07090d 100%) fixed}
+.sh-page *{box-sizing:border-box}
+.sh-wrap{position:fixed;top:62px;left:0;right:0;bottom:0;display:flex;padding:22px 28px 24px 36px;gap:26px}
+
+.sh-mapc{flex:1;position:relative;border-radius:22px;overflow:hidden;border:1px solid rgba(255,255,255,.1);min-width:0}
+#sh-map{position:absolute;inset:0;background:#1a1a1f}
+.sh-mapc .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.9) contrast(.85) saturate(.35)}
+.sh-mapc .leaflet-container{font-family:"Segoe UI",system-ui,sans-serif}
+.sh-mapc .leaflet-bar a{width:48px!important;height:48px!important;line-height:48px!important;font-size:24px!important;
+  background:#2a2a30!important;color:#fff!important;border-color:#444!important}
+.sh-mapc .leaflet-control-attribution{background:rgba(16,20,28,.7);color:#9aa5b1}
+.sh-mapc .leaflet-control-attribution a{color:#9fd3ff}
+
+.sh-live{position:absolute;z-index:500;top:18px;left:84px;display:flex;align-items:center;gap:14px;padding:14px 20px;
+  border-radius:16px;background:rgba(16,20,28,.88);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.12);font-size:17px;max-width:calc(100% - 110px)}
+.sh-live .pulse{flex:none;width:12px;height:12px;border-radius:50%;background:#5fd68b;box-shadow:0 0 0 0 rgba(95,214,139,.7);animation:sh-p 1.6s infinite}
+@keyframes sh-p{70%{box-shadow:0 0 0 12px rgba(95,214,139,0)}100%{box-shadow:0 0 0 0 rgba(95,214,139,0)}}
+.sh-live b{font-weight:600}.sh-live .sub{opacity:.6;font-size:14px}
+.sh-live .sub:empty{display:none}
+.sh-live.off .pulse{background:#6b7480;animation:none}
+.sh-legend{position:absolute;z-index:500;bottom:18px;left:18px;display:flex;gap:18px;padding:10px 16px;border-radius:12px;
+  background:rgba(16,20,28,.85);font-size:13.5px;opacity:.9}
+.sh-legend span{display:flex;align-items:center;gap:7px}
+.sh-legend i.d{width:11px;height:11px;border-radius:50%;display:inline-block}
+
+.sh-rail{width:620px;flex:none;display:flex;flex-direction:column;gap:18px;min-height:0}
+.sh-card{background:linear-gradient(160deg,rgba(255,255,255,.1),rgba(255,255,255,.035));border:1px solid rgba(255,255,255,.1);
+  border-radius:22px;padding:22px 24px}
+.sh-card .lbl{font-size:12.5px;letter-spacing:.2em;text-transform:uppercase;opacity:.6;display:flex;align-items:center;gap:10px}
+.sh-card .lbl i{color:#7cc4ff}
+.sh-nx{display:flex;align-items:flex-end;gap:22px;margin-top:12px}
+.sh-nx .t{font-size:64px;font-weight:600;line-height:1}
+.sh-nx .t small{font-size:24px;font-weight:400;opacity:.7;margin-left:4px}
+.sh-nx .t.sm{font-size:40px}
+.sh-nx .in{font-size:22px;color:#7be0a1;padding-bottom:8px}
+.sh-nx .bell{all:unset;margin-left:auto;display:flex;align-items:center;gap:10px;padding:14px 22px;border-radius:16px;
+  background:#7cc4ff;color:#08131f;font-weight:700;font-size:17px;cursor:pointer;white-space:nowrap}
+.sh-nx .bell.on{background:#5fd68b}
+.sh-card .where{margin-top:10px;font-size:16px;opacity:.75}
+
+.sh-deps{flex:1;display:flex;flex-direction:column;min-height:0}
+.sh-tabs{display:flex;gap:6px;padding:4px;border-radius:999px;background:rgba(255,255,255,.06);margin:14px 0 6px}
+.sh-tabs button{all:unset;flex:1;text-align:center;padding:10px 0;border-radius:999px;font-size:15px;cursor:pointer;opacity:.75}
+.sh-tabs button.on{background:#ffb36b;color:#20140a;opacity:1;font-weight:600}
+.sh-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:2px;margin-top:8px;min-height:0;scrollbar-width:none}
+.sh-list::-webkit-scrollbar{display:none}
+.sh-list[hidden]{display:none}
+.sh-row{display:flex;align-items:center;gap:16px;padding:5px 6px;border-bottom:1px solid rgba(255,255,255,.06);font-size:18px;min-height:55px;flex:none}
+.sh-row .tm{width:96px;font-weight:600;flex:none}
+.sh-row .rel{opacity:.6;font-size:15px;flex:1}
+.sh-row .arr{margin-left:10px;opacity:.8}
+.sh-row .rel[data-t] .arr::before{content:"· ";}
+.sh-row.past{opacity:.35}
+.sh-row .rb{all:unset;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.08);
+  font-size:17px;cursor:pointer;color:#cfe6ff;flex:none}
+.sh-row .rb.on{background:#7cc4ff;color:#08131f}
+.sh-row .tag{font-size:12px;padding:3px 9px;border-radius:999px;background:rgba(255,179,107,.18);color:#ffc890;letter-spacing:.04em;opacity:1;margin-left:8px}
+.sh-brk{font-size:13px;opacity:.45;padding:6px 6px;letter-spacing:.06em;flex:none}
+
+.sh-rem{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;background:rgba(124,196,255,.1);margin-top:12px;font-size:16px}
+.sh-rem i.fa-bell{color:#7cc4ff;font-size:20px}
+.sh-rem .s{opacity:.65;font-size:14px}
+.sh-rem .x{all:unset;margin-left:auto;padding:8px 14px;border-radius:999px;background:rgba(255,255,255,.08);font-size:14px;cursor:pointer}
+.sh-foot{font-size:12.5px;opacity:.45;line-height:1.5;flex:none}
+
+.sh-ov{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);display:grid;place-items:center;z-index:2000}
+.sh-ov[hidden]{display:none}
+.sh-dlg{width:720px;max-width:calc(100vw - 32px);border-radius:26px;background:#151b25;border:1px solid rgba(255,255,255,.12);
+  padding:34px 38px;box-shadow:0 30px 80px rgba(0,0,0,.6);color:#e8eef5;font-family:"Segoe UI",system-ui,sans-serif}
+.sh-dlg h3{margin:0;font-size:28px;font-weight:600;display:flex;gap:14px;align-items:center}
+.sh-dlg h3 i{color:#7cc4ff}
+.sh-dlg .m{opacity:.65;font-size:16px;margin-top:6px}
+.sh-dlg .q{margin:28px 0 12px;font-size:14px;letter-spacing:.16em;text-transform:uppercase;opacity:.6}
+.sh-leads{display:flex;gap:12px}
+.sh-leads button{all:unset;flex:1;text-align:center;padding:18px 0;border-radius:16px;background:rgba(255,255,255,.07);font-size:22px;font-weight:600;cursor:pointer}
+.sh-leads button small{display:block;font-size:13px;font-weight:400;opacity:.6;margin-top:2px}
+.sh-leads button.on{background:#7cc4ff;color:#08131f}
+.sh-leads button.on small{opacity:.75}
+.sh-leads button:disabled{opacity:.25;cursor:default}
+.sh-prev{margin-top:26px;padding:16px 18px;border-radius:14px;background:rgba(255,255,255,.05);display:flex;gap:14px;align-items:flex-start;font-size:16px;line-height:1.45}
+.sh-prev i{color:#7cc4ff;font-size:20px;margin-top:3px}
+.sh-prev .w{opacity:.55;font-size:13.5px;margin-top:4px}
+.sh-err{color:#ff9a8a;font-size:15px;margin-top:14px;min-height:0}
+.sh-err:empty{display:none}
+.sh-acts{display:flex;gap:14px;margin-top:28px}
+.sh-acts button{all:unset;flex:1;text-align:center;padding:16px 0;border-radius:16px;font-weight:700;font-size:17px;cursor:pointer}
+.sh-acts button[hidden]{display:none}
+.sh-acts .c{background:rgba(255,255,255,.08)}
+.sh-acts .rm{background:rgba(255,120,100,.18);color:#ffb3a6}
+.sh-acts .ok{background:#7cc4ff;color:#08131f}
+.sh-acts .ok:disabled{opacity:.4;cursor:default}
+
+/* map markers */
+.sh-stop{width:16px;height:16px;border-radius:50%;background:#1a1f28;border:3px solid #7cc4ff;position:relative}
+.sh-slab{position:absolute;left:22px;top:-4px;white-space:nowrap;font:600 13px "Segoe UI",system-ui,sans-serif;color:#fff;
+  text-shadow:0 1px 3px #000,0 0 6px #000}
+.sh-our{width:30px;height:30px;border-radius:50%;background:#ffb36b;border:4px solid #fff;box-shadow:0 0 0 6px rgba(255,179,107,.3);position:relative}
+.sh-our .sh-slab{left:40px;top:2px;font-size:15px;color:#ffd2a6}
+.sh-bus{width:46px;height:46px;border-radius:50%;background:#5fd68b;border:3px solid #fff;display:grid;place-items:center;color:#08200f;
+  font-size:20px;box-shadow:0 0 0 8px rgba(95,214,139,.25),0 4px 14px rgba(0,0,0,.6)}
+.sh-bus.stale{background:#9aa5b1;box-shadow:0 4px 14px rgba(0,0,0,.6)}
+
+@media (max-width: 900px){
+  body.sh-page{overflow:auto}
+  .sh-wrap{position:static;flex-direction:column;padding:12px;height:auto}
+  .sh-mapc{flex:none;height:55vh}
+  .sh-rail{width:auto}
+  .sh-live{left:66px;top:10px;font-size:15px;padding:10px 14px}
+  .sh-legend{display:none}
+  .sh-nx{flex-wrap:wrap}
+  .sh-nx .t{font-size:48px}
+  .sh-nx .bell{margin-left:0}
+  .sh-list{overflow:visible}
+  .sh-dlg{padding:24px}
+  .sh-leads{flex-wrap:wrap}
+  .sh-leads button{flex:1 1 40%}
+}

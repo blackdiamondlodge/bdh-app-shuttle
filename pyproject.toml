@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bdh-app-shuttle"
+version = "1.0.0"
+description = "Black Diamond Hub app: Sun Peaks in-resort shuttle times, live bus location and spoken reminders"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.11"
+dependencies = [
+    "bdh-sdk>=0.2,<1",
+    "requests",
+]
+
+[project.urls]
+Source = "https://github.com/blackdiamondlodge/bdh-app-shuttle"
+
+[project.entry-points."blackdiamondhub.plugins"]
+shuttle = "shuttle.plugin:spec"
+
+[tool.setuptools.packages.find]
+include = ["shuttle", "shuttle.*"]
+
+[tool.setuptools.package-data]
+shuttle = [
+    "templates/**/*",
+    "static/**/*",
+    "data/*.json",
+]
