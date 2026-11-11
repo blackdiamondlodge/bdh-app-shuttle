@@ -19,7 +19,7 @@
       <span class="pulse"></span>
       <div>
         <b id="sh-lt">{% if in_season %}Looking for the shuttle…{% else %}Shuttle not running{% endif %}</b>
-        <div class="sub" id="sh-ls">{% if not in_season %}Winter service {{ season_note|lower }} · live tracking resumes then{% endif %}</div>
+        <div class="sub" id="sh-ls">{% if not in_season %}{{ season_note }} · live tracking during service{% endif %}</div>
       </div>
     </div>
     <div class="sh-legend">
@@ -76,7 +76,7 @@
 {% if reminders_on %}
 <div class="sh-ov" id="sh-ov" hidden>
   <div class="sh-dlg" role="dialog" aria-modal="true" aria-labelledby="sh-dh">
-    <h3 id="sh-dh"><i class="fas fa-bell"></i>Remind me about the <span id="sh-dt"></span> shuttle</h3>
+    <h3 id="sh-dh"><i class="fas fa-bell"></i><span>Remind me about the <span id="sh-dt"></span> shuttle</span></h3>
     <div class="m">From Lookout Ridge (out front) to the Village</div>
     <div class="q">How much warning?</div>
     <div class="sh-leads" id="sh-leads">

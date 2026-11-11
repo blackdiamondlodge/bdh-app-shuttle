@@ -25,7 +25,7 @@
 
   // ---- map -------------------------------------------------------------
   const route = geo.route;
-  const map = L.map("sh-map", { zoomControl: true, attributionControl: true });
+  const map = L.map("sh-map", { zoomControl: true, attributionControl: true, zoomSnap: 0.25 });
   map.attributionControl.setPrefix(false);
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19, attribution: "© OpenStreetMap",
@@ -45,7 +45,12 @@
       }),
     }).bindTooltip(esc(name)).addTo(map);
   });
-  map.fitBounds(L.latLngBounds(route).pad(0.04));
+  // Labels hang off to the right of their stops; leave room for them.
+  const mw = document.getElementById("sh-map").clientWidth;
+  map.fitBounds(L.latLngBounds(route), {
+    paddingTopLeft: [Math.round(mw * 0.03), 70],
+    paddingBottomRight: [Math.min(220, Math.round(mw * 0.18)), 50],
+  });
 
   // ---- live bus --------------------------------------------------------
   const buses = new Map();
