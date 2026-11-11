@@ -14,9 +14,9 @@ STOPS = (
     {"id": "E2", "name": "McGillivray Creek", "lat": 50.88345, "lon": -119.87470, "label": False},
     {"id": "E3", "name": "Orient Chair", "lat": 50.88300, "lon": -119.87130, "label": True},
     {"id": "E4", "name": "P5 Entrance", "lat": 50.88360, "lon": -119.86800, "label": False},
-    {"id": "E5", "name": "Switchback Creek", "lat": 50.88505, "lon": -119.86560, "label": True},
+    {"id": "E5", "name": "Switchback Creek", "lat": 50.88505, "lon": -119.86560, "label": "left"},
     {"id": "E6", "name": "Altitude", "lat": 50.88345, "lon": -119.86200, "label": True},
-    {"id": "E7", "name": "Lookout Ridge", "lat": 50.88455, "lon": -119.86380, "label": True},
+    {"id": "E7", "name": "Lookout Ridge", "lat": 50.88512, "lon": -119.86467, "label": True},
     {"id": "E8", "name": "Stones Throw", "lat": 50.88405, "lon": -119.86790, "label": False},
     {"id": "E9", "name": "Trappers Landing", "lat": 50.88370, "lon": -119.87330, "label": False},
 )
